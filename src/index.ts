@@ -31,6 +31,11 @@ import { MemoryLeakAnalyzer } from './analyzers/memory-leak-analyzer';
 import { CpuPerformanceAnalyzer } from './analyzers/cpu-performance-analyzer';
 import { AsyncBottleneckAnalyzer } from './analyzers/async-bottleneck-analyzer';
 
+// Performance Services
+import { AsyncBottleneckService } from './performance-issues/services/async-bottleneck.service';
+import { CpuIntensiveService } from './performance-issues/services/cpu-intensive.service';
+import { MemoryLeakService } from './performance-issues/services/memory-leak.service';
+
 // Package Version and Configuration
 export const VERSION = '0.1.0';
 
@@ -80,7 +85,11 @@ export const PerformanceMonitoringToolkit = {
   PerformanceLogger,
   MemoryLeakAnalyzer,
   CpuPerformanceAnalyzer,
-  AsyncBottleneckAnalyzer
+  AsyncBottleneckAnalyzer,
+  // Added Performance Services
+  AsyncBottleneckService,
+  CpuIntensiveService,
+  MemoryLeakService
 };
 
 // Exports
@@ -98,7 +107,11 @@ export {
   PerformanceLogger,
   MemoryLeakAnalyzer,
   CpuPerformanceAnalyzer,
-  AsyncBottleneckAnalyzer
+  AsyncBottleneckAnalyzer,
+  // Added Performance Services
+  AsyncBottleneckService,
+  CpuIntensiveService,
+  MemoryLeakService
 };
 
 // Default Export

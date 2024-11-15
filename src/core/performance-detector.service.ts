@@ -182,7 +182,7 @@ export class PerformanceDetectorService implements OnModuleInit {
     const profilingId = `performance-${Date.now()}`;
     
     // Use performance hooks as a fallback
-    const startTime = performance.now();
+    //const startTime = performance.now();
     
     // V8 Profiler integration if available
     if (v8Profiler) {

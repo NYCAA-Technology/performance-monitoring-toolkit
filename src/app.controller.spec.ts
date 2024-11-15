@@ -2,6 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+// Import performance setup from test directory
+const { setupPerformanceTracking, analyzePerformance } = require('../test/setup-performance-tests');
+
 describe('AppController', () => {
   let appController: AppController;
 
@@ -12,6 +15,14 @@ describe('AppController', () => {
     }).compile();
 
     appController = app.get<AppController>(AppController);
+
+    // Call performance tracking setup
+    setupPerformanceTracking();
+  });
+
+  afterEach(() => {
+    // Call performance analysis
+    analyzePerformance();
   });
 
   describe('root', () => {

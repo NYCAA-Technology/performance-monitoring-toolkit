@@ -92,6 +92,12 @@ export class MemoryLeakService {
       const eventSource = new EventTarget();
       const leakyHandler = () => {
         const largeData = new Array(10000).fill(`Event listener leak ${i}`);
+        
+        // Minimal usage to prevent unused variable warning
+        if (largeData.length > 0) {
+          // No-op to ensure largeData is used
+          console.debug(`Leak data created: ${largeData.length}`);
+        }
       };
 
       // Add multiple listeners without removal

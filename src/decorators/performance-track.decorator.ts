@@ -38,7 +38,6 @@ export interface PerformanceTrackOptions {
  */
 export function PerformanceTrack(options: PerformanceTrackOptions = {}) {
   return (
-    target: any, 
     propertyKey: string, 
     descriptor: PropertyDescriptor
   ) => {

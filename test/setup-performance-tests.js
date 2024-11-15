@@ -1,14 +1,19 @@
 // Performance Test Setup and Monitoring
 
-// Global performance tracking
-global.performanceMetrics = {
-  testStartTime: null,
-  memoryUsageBefore: null,
-  cpuUsageBefore: null
-};
+// Ensure Jest global functions are available
+const { beforeEach, afterEach, expect } = require('@jest/globals');
 
-// Performance tracking before each test
-beforeEach(() => {
+// Global performance tracking
+if (!global.performanceMetrics) {
+  global.performanceMetrics = {
+    testStartTime: null,
+    memoryUsageBefore: null,
+    cpuUsageBefore: null
+  };
+}
+
+// Performance tracking setup function
+function setupPerformanceTracking() {
   global.performanceMetrics.testStartTime = Date.now();
   global.performanceMetrics.memoryUsageBefore = process.memoryUsage().heapUsed;
   
@@ -16,10 +21,10 @@ beforeEach(() => {
   if (process.cpuUsage) {
     global.performanceMetrics.cpuUsageBefore = process.cpuUsage();
   }
-});
+}
 
-// Performance analysis after each test
-afterEach(() => {
+// Performance analysis function
+function analyzePerformance() {
   const testEndTime = Date.now();
   const executionTime = testEndTime - global.performanceMetrics.testStartTime;
   const memoryUsageAfter = process.memoryUsage().heapUsed;
@@ -41,7 +46,18 @@ afterEach(() => {
   if (memoryUsed > memoryLeakThreshold) {
     console.warn(`Memory Leak Warning: ${memoryUsed / 1024 / 1024}MB used (threshold: ${memoryLeakThreshold / 1024 / 1024}MB)`);
   }
-});
+
+  // Cleanup and reset global metrics
+  global.performanceMetrics = {
+    testStartTime: null,
+    memoryUsageBefore: null,
+    cpuUsageBefore: null
+  };
+}
+
+// Expose functions globally to ensure they can be used in test files
+global.setupPerformanceTracking = setupPerformanceTracking;
+global.analyzePerformance = analyzePerformance;
 
 // Optional: Global error handler for unhandled promises
 process.on('unhandledRejection', (reason, promise) => {
@@ -103,3 +119,10 @@ const performanceMonitor = {
 
 // Expose performance monitor globally
 global.performanceMonitor = performanceMonitor;
+
+// Export for potential module usage
+module.exports = {
+  setupPerformanceTracking,
+  analyzePerformance,
+  performanceMonitor
+};

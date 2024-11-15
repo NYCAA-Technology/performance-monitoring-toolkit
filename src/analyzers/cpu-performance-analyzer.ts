@@ -105,7 +105,7 @@ export class CpuPerformanceAnalyzer {
    * Detect CPU performance bottlenecks
    */
   detectBottlenecks(): PerformanceIssueInterface | null {
-    const startTime = Date.now();
+    //const startTime = Date.now();
     const complexityLevels = [10, 20, 30];
     let maxExecutionTime = 0;
 

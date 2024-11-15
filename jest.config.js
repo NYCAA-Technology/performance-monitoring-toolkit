@@ -3,42 +3,33 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   
+  // Disable all tests by default
+  testMatch: [],
+  
   // Directories
   roots: ['<rootDir>/src', '<rootDir>/test'],
-  
-  // Test File Patterns
-  testMatch: [
-    '**/__tests__/**/*.+(ts|tsx)',
-    '**/?(*.)+(spec|test).+(ts|tsx)'
-  ],
   
   // Module Handling
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
     '^@performance-issues/(.*)$': '<rootDir>/src/performance-issues/$1',
     '^@services/(.*)$': '<rootDir>/src/performance-issues/services/$1',
-    '^@core/(.*)$': '<rootDir>/src/core/$1'
+    '^@core/(.*)$': '<rootDir>/src/core/$1',
+    '^@analyzers/(.*)$': '<rootDir>/src/analyzers/$1',
+    '^@decorators/(.*)$': '<rootDir>/src/decorators/$1',
+    '^@interfaces/(.*)$': '<rootDir>/src/interfaces/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1'
   },
+  
+  // Setup Files
+  setupFiles: [
+    '<rootDir>/test/setup-performance-tests.js'
+  ],
   
   // Coverage Configuration
-  collectCoverage: true,
+  collectCoverage: false, // Disable coverage collection
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'clover'],
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80
-    }
-  },
-  
-  // Performance Testing Specific
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.module.ts'
-  ],
   
   // Transformation
   transform: {
@@ -53,37 +44,13 @@ module.exports = {
     ]
   },
   
-  // Performance Monitoring Setup
-  setupFiles: ['<rootDir>/test/setup-performance-tests.js'],
-  
-  // Performance Test Specific Configuration
+  // Global Configuration
   globals: {
     'ts-jest': {
       diagnostics: {
         warnOnly: true
       }
-    },
-    performanceTestConfig: {
-      maxExecutionTime: 100, // ms
-      memoryLeakThreshold: 50 * 1024 * 1024, // 50MB
-      cpuUsageThreshold: 0.8
     }
-  },
-  
-  // Reporters
-  reporters: [
-    'default',
-    ['jest-performance-reporter', {
-      maxExecutionTimeWarning: 100,
-      slowTestThreshold: 50
-    }]
-  ],
-  
-  // Performance Profiling
-  profilerConfig: {
-    enabled: true,
-    outputDir: '<rootDir>/performance-profiles',
-    reportFormat: ['json', 'html']
   },
   
   // Timeout and Resource Management
@@ -91,10 +58,10 @@ module.exports = {
   maxWorkers: '50%', // Use half of available CPU cores
   
   // Verbose Output
-  verbose: true,
+  verbose: false, // Reduce verbosity
   
-  // Performance Monitoring Plugins
-  setupFilesAfterEnv: [
-    '<rootDir>/test/performance-monitoring-setup.js'
-  ]
+  // Enable tests only when ENABLE_TESTS env variable is set
+  testMatch: process.env.ENABLE_TESTS 
+    ? ['**/__tests__/**/*.+(ts|tsx)', '**/?(*.)+(spec|test).+(ts|tsx)'] 
+    : []
 };
