@@ -1,0 +1,135 @@
+groups:
+# Performance and Resource Monitoring Rules
+- name: performance_monitoring
+  rules:
+  # CPU Usage Alerts
+  - alert: HighCPUUsage
+    expr: >
+      avg(rate(node_cpu_seconds_total{mode!='idle'}[5m])) by (instance) * 100 > 80
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU Usage on {{ $labels.instance }}"
+      description: "CPU usage is above 80% for more than 10 minutes. Current usage: {{ $value }}%"
+
+  - alert: CriticalCPUUsage
+    expr: >
+      avg(rate(node_cpu_seconds_total{mode!='idle'}[5m])) by (instance) * 100 > 95
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical CPU Usage on {{ $labels.instance }}"
+      description: "CPU usage is above 95% for more than 5 minutes. Current usage: {{ $value }}%"
+
+  # Memory Usage Alerts
+  - alert: HighMemoryUsage
+    expr: >
+      (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Memory Usage on {{ $labels.instance }}"
+      description: "Memory usage is above 85% for more than 10 minutes. Current usage: {{ $value }}%"
+
+  - alert: CriticalMemoryUsage
+    expr: >
+      (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 95
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical Memory Usage on {{ $labels.instance }}"
+      description: "Memory usage is above 95% for more than 5 minutes. Current usage: {{ $value }}%"
+
+  # Disk Usage Alerts
+  - alert: HighDiskUsage
+    expr: >
+      (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 85
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Disk Usage on {{ $labels.instance }}"
+      description: "Disk usage is above 85% for more than 10 minutes. Current usage: {{ $value }}%"
+
+  - alert: CriticalDiskUsage
+    expr: >
+      (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 95
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical Disk Usage on {{ $labels.instance }}"
+      description: "Disk usage is above 95% for more than 5 minutes. Current usage: {{ $value }}%"
+
+# Application Performance Monitoring
+- name: application_performance
+  rules:
+  # Request Latency Alerts
+  - alert: HighRequestLatency
+    expr: >
+      histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Request Latency Detected"
+      description: "95th percentile request latency is above 500ms for more than 5 minutes. Current latency: {{ $value }}s"
+
+  - alert: CriticalRequestLatency
+    expr: >
+      histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 1
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical Request Latency Detected"
+      description: "99th percentile request latency is above 1s for more than 3 minutes. Current latency: {{ $value }}s"
+
+  # Error Rate Alerts
+  - alert: HighErrorRate
+    expr: >
+      sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Error Rate Detected"
+      description: "Error rate is above 5% for more than 10 minutes. Current error rate: {{ $value }}%"
+
+  - alert: CriticalErrorRate
+    expr: >
+      sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 10
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical Error Rate Detected"
+      description: "Error rate is above 10% for more than 5 minutes. Current error rate: {{ $value }}%"
+
+# Performance Bottleneck Detection
+- name: performance_bottlenecks
+  rules:
+  # Memory Leak Detection
+  - alert: PotentialMemoryLeak
+    expr: >
+      process_resident_memory_bytes{job="performance-demo"} > process_resident_memory_bytes{job="performance-demo"} offset 1h * 1.5
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Potential Memory Leak Detected"
+      description: "Memory usage has increased by 50% over the last hour. Current memory usage: {{ $value }} bytes"
+
+  # Long-Running Processes
+  - alert: LongRunningProcesses
+    expr: >
+      time() - process_start_time_seconds{job="performance-demo"} > 86400
+    labels:
+      severity: warning
+    annotations:
+      summary: "Long-Running Process Detected"
+      description: "Process has been running for more than 24 hours. Potential performance degradation."

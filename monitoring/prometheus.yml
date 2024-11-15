@@ -1,0 +1,121 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # Uncomment when Alertmanager is configured
+          # - alertmanager:9093
+
+rule_files:
+  # Performance and resource monitoring rules
+  - "performance_rules.yml"
+
+scrape_configs:
+  # Application Performance Metrics
+  - job_name: 'performance-demo'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['app:3000']
+    
+    # Additional scrape configurations
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'performance-demo-app'
+
+  # Node Exporter Hardware Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    
+    # Detailed node metrics labeling
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'performance-demo-host'
+
+  # Redis Performance Metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    
+    # Redis-specific metric configuration
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'performance-demo-cache'
+
+  # Prometheus Self Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Advanced Performance Monitoring Configuration
+performance_monitoring:
+  # Critical Performance Thresholds
+  thresholds:
+    cpu_usage_percent: 
+      warning: 70
+      critical: 90
+    memory_usage_percent: 
+      warning: 75
+      critical: 90
+    disk_usage_percent: 
+      warning: 80
+      critical: 95
+    request_latency_ms: 
+      warning: 300
+      critical: 500
+
+  # Profiling and Sampling Configuration
+  profiling:
+    enabled: true
+    sample_rate: 0.1
+    max_duration: 60s
+    
+    # Detailed profiling targets
+    targets:
+      - service: app
+        metrics:
+          - cpu_profile
+          - memory_profile
+          - request_duration
+      - service: redis
+        metrics:
+          - connection_pool
+          - query_latency
+
+  # Alerting Conditions
+  alerts:
+    - name: HighCPUUsage
+      condition: >
+        avg(rate(node_cpu_seconds_total{mode!='idle'}[5m])) by (instance) * 100 > 90
+      severity: critical
+      description: "High CPU usage detected on {{ $labels.instance }}"
+
+    - name: HighMemoryUsage
+      condition: >
+        (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+      severity: critical
+      description: "High memory usage detected on {{ $labels.instance }}"
+
+    - name: SlowRequestLatency
+      condition: >
+        histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+      severity: warning
+      description: "High request latency detected"
+
+# Custom Metric Relabeling
+metric_relabel_configs:
+  - source_labels: [__name__]
+    regex: 'go_.*'
+    action: drop
+  - source_labels: [__name__]
+    regex: 'node_.*'
+    action: drop
+  - source_labels: [__name__]
+    regex: 'container_.*'
+    action: drop

@@ -1,0 +1,76 @@
+{
+  "compilerOptions": {
+    // Basic Compiler Options
+    "target": "ES2021",
+    "module": "commonjs",
+    "lib": ["ES2021", "DOM"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    
+    // Strict Type Checking
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    
+    // Additional Checks
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    // Module Resolution
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {
+      "@performance-issues/*": ["performance-issues/*"],
+      "@services/*": ["performance-issues/services/*"],
+      "@core/*": ["core/*"]
+    },
+    
+    // Source Map and Debugging
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    "inlineSources": true,
+    
+    // Performance Optimization
+    "removeComments": true,
+    "incremental": true,
+    
+    // Decorator Support
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    // Advanced Options
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    
+    // Performance Monitoring Specific
+    "allowJs": false,
+    "checkJs": false,
+    
+    // Error Handling
+    "noErrorTruncation": true,
+    "pretty": true
+  },
+  
+  // Include and Exclude Configurations
+  "include": [
+    "src/**/*.ts",
+    "load-test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts"
+  ],
+  
+  // Performance Monitoring Specific Configuration
+  "performanceMonitoring": {
+    "enableDetailedProfiling": true,
+    "trackMemoryAllocations": true,
+    "optimizationLevel": "aggressive"
+  }
+}
